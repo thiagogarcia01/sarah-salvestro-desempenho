@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3º Bimestre · Desenvolvimento de Sistemas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           VARIÁVEIS E RESET (Mobile First)
+           ========================================= */
+        :root {
+            --bg-color: #0b1120;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --hover-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15), transparent 50%);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-bottom: 30px;
+            font-size: 14px;
+            /* Base menor para mobile */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* =========================================
+           HEADER (Mobile First)
+           ========================================= */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .school-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            /* Removemos o background em gradiente para não aparecer atrás da imagem */
+            background: transparent;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Removemos color, font-weight e font-size */
+            box-shadow: 0 0 15px rgba(75, 121, 194, 0.4);
+            /* Adicionamos overflow: hidden para a imagem não ultrapassar as bordas arredondadas */
+            overflow: hidden;
+        }
+
+        /* Nova regra para a imagem dentro da caixa */
+        .logo-placeholder img {
+            width: 90%;
+            height: 90%;
+            /* "object-fit: contain" garante que a imagem inteira apareça sem esticar ou cortar.
+       Se você quiser que a imagem preencha tudo (mesmo que corte as bordas), use "cover". */
+            object-fit: contain;
+        }
+
+        .school-info h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .school-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .badge-3bi {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* =========================================
+           HERO STATS (Mobile First: 1 coluna)
+           ========================================= */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Mobile: 1 coluna */
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+
+        .stat-card h3 {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .stat-card .subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* =========================================
+           SEÇÕES E TÍTULOS
+           ========================================= */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title span {
+            font-size: 1.4rem;
+        }
+
+        /* =========================================
+           TECH CARDS & ACCORDION (CSS ONLY)
+           ========================================= */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Mobile: 1 coluna */
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .tech-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .tech-card.proc::before {
+            background: var(--accent-green);
+        }
+
+        .tech-card.logic::before {
+            background: var(--accent-blue);
+        }
+
+        .tech-card.net::before {
+            background: var(--accent-amber);
+        }
+
+        .tech-card.ccmt::before {
+            background: var(--accent-purple);
+        }
+
+        .tech-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .tech-title {
+            font-size: 1rem;
+            font-weight: 600;
+            max-width: 65%;
+        }
+
+        .tech-score {
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        .tech-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        /* Estrutura do Accordion CSS-Only */
+        .accordion-item {
+            position: relative;
+        }
+
+        /* Esconde o checkbox real */
+        .accordion-toggle {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* O Label funciona como o botão */
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .accordion-header:active {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* O Switch Visual */
+        .switch-visual {
+            position: relative;
+            width: 36px;
+            height: 20px;
+            background-color: #334155;
+            border-radius: 34px;
+            transition: .3s;
+            flex-shrink: 0;
+        }
+
+        .switch-visual::before {
+            content: "";
+            position: absolute;
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        /* Conteúdo Escondido */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-out;
+            opacity: 0;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            margin-top: 0;
+        }
+
+        .accordion-content ul {
+            list-style: none;
+            font-size: 0.8rem;
+            padding: 15px;
+        }
+
+        .accordion-content li {
+            margin-bottom: 10px;
+            padding-left: 18px;
+            position: relative;
+            color: var(--text-muted);
+        }
+
+        .accordion-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .accordion-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        .accordion-content strong {
+            color: var(--text-main);
+        }
+
+        /* Lógica do CSS quando o checkbox está marcado */
+        .accordion-toggle:checked~.accordion-content {
+            max-height: 400px;
+            opacity: 1;
+            margin-top: 10px;
+        }
+
+        /* Muda a cor do switch quando marcado */
+        .accordion-toggle:checked+.accordion-header .switch-visual {
+            background-color: var(--accent-blue);
+        }
+
+        .accordion-toggle:checked+.accordion-header .switch-visual::before {
+            transform: translateX(16px);
+        }
+
+        /* =========================================
+           GRÁFICO
+           ========================================= */
+        .chart-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 35px;
+            height: 300px;
+            /* Altura fixa para mobile */
+            position: relative;
+        }
+
+        /* =========================================
+           TOP 5 ALUNOS
+           ========================================= */
+        .top-students-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Mobile: 1 coluna */
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .student-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: -10px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .student-card h4 {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .student-card .avg {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            margin: 5px 0;
+        }
+
+        .student-card .tech-highlights {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 10px;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        /* =========================================
+   TABELA DE DESEMPENHO TÉCNICO
+   ========================================= */
+        .table-section {
+            margin-bottom: 35px;
+        }
+
+        .table-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .table-controls input,
+        .table-controls select {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .table-controls input:focus,
+        .table-controls select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .table-wrapper {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow-x: auto;
+            /* Permite rolar para o lado no celular */
+            max-height: 450px;
+            /* Limita a altura */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Scroll suave no iOS */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 500px;
+            /* Garante que não fique espremido no mobile */
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.95);
+            /* Fundo mais escuro para o cabeçalho */
+            backdrop-filter: blur(5px);
+            color: var(--text-muted);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+
+        td:first-child,
+        th:first-child {
+            text-align: left;
+            min-width: 180px;
+            padding-left: 15px;
+        }
+
+        /* Cores baseadas na nota */
+        .grade-high {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .grade-mid {
+            color: var(--accent-amber);
+            font-weight: 700;
+        }
+
+        .grade-low {
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
+        /* Destaque sutil para a média */
+        td:last-child {
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: 800;
+        }
+
+        /* Ajustes para tablets e desktops */
+        @media (min-width: 768px) {
+            .table-controls {
+                flex-direction: row;
+            }
+
+            .table-controls input {
+                flex: 2;
+            }
+
+            .table-controls select {
+                flex: 1;
+            }
+        }
+
+        /* =========================================
+           FOOTER
+           ========================================= */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            border-top: 1px solid var(--card-border);
+            margin-top: 20px;
+        }
+
+        /* =========================================
+           MEDIA QUERIES (Tablet e Desktop)
+           ========================================= */
+        @media (min-width: 768px) {
+            body {
+                font-size: 15px;
+            }
+
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+                padding: 30px 0;
+            }
+
+            .school-info {
+                flex-direction: row;
+                text-align: left;
+            }
+
+            .hero-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .top-students-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .chart-container {
+                height: 700px;
+                padding: 25px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .tech-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .top-students-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--hover-shadow);
+            }
+
+            .tech-card:hover {
+                border-color: rgba(59, 130, 246, 0.4);
+            }
+        }
+
+        /* =========================================
+   BOTÃO CTA - VISITAS TÉCNICAS
+   ========================================= */
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 40px 0 20px 0;
+            text-align: center;
+        }
+
+        .cta-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .cta-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 35px;
+            /* Gradiente vibrante de Rosa para Laranja */
+            background: linear-gradient(135deg, #ff007f, #ff8a00);
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(255, 0, 127, 0.4);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            /* Impede que fique gigante em telas grandes */
+        }
+
+        /* Efeito de brilho ao passar o mouse */
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: left 0.7s ease;
+            z-index: 2;
+        }
+
+        .cta-button:hover::after {
+            left: 150%;
+        }
+
+        /* Efeito de elevação ao passar o mouse */
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(255, 0, 127, 0.6);
+        }
+
+        /* Efeito de clique (reduz o tamanho) */
+        .cta-button:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.4);
+        }
+
+        /* Ícones Flutuantes */
+        .cta-icon {
+            display: inline-block;
+            font-size: 1.4rem;
+            animation: float 2s ease-in-out infinite;
+            z-index: 3;
+        }
+
+        .cta-icon:last-child {
+            animation-delay: 0.5s;
+            /* Descompasso para parecer mais natural */
+        }
+
+        .cta-text {
+            z-index: 3;
+        }
+
+        /* Animação de flutuação dos ícones */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Animação de Pulso no botão inteiro */
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 0, 127, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 127, 0);
+            }
+        }
+
+        .cta-button {
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        /* Ajustes para telas menores (Mobile) */
+        @media (max-width: 480px) {
+            .cta-button {
+                padding: 15px 20px;
+                font-size: 1rem;
+            }
+
+            .cta-icon {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="school-info">
+                <div class="logo-placeholder"><img src="logo.png" alt="logo"></div>
+                <div>
+                    <h1>E.E. Sarah Salvestro </h1>
+                    <p>2º Ano B · Desenvolvimento de Sistemas · Sorocaba</p>
+                </div>
+            </div>
+            <div class="badge-3bi">📊 PROVA PAULISTA - 3º Bimestre</div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-grid">
+            <div class="stat-card">
+                <h3>Participação Geral</h3>
+                <div class="value">98,5%</div>
+                <p class="subtext">Altíssimo engajamento nas avaliações</p>
+            </div>
+            <div class="stat-card">
+                <h3>Média Geral da Turma - FGV</h3>
+                <div class="value">62,7%</div>
+                <p class="subtext">Acima da média da escola (56,7%)</p>
+            </div>
+            <div class="stat-card">
+                <h3>Média Geral no Técnico</h3>
+                <div class="value">60,1%</div>
+                <p class="subtext">Lógica + Processos + Redes</p>
+            </div>
+        </section>
+
+        <!-- FGB Section -->
+        <h2 class="section-title"><span>📚</span> Formação Geral Básica</h2>
+        <div class="tech-grid" id="fgb-grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom: 35px;">
+            <!-- Os cards serão gerados automaticamente pelo JavaScript -->
+        </div>
+
+        <!-- Tech Section -->
+        <h2 class="section-title"><span>💻</span> O Coração do Curso: Itinerário Técnico</h2>
+        <div class="tech-grid">
+
+            <!-- Processos -->
+            <div class="tech-card proc">
+                <div class="tech-header">
+                    <div class="tech-title">Processos de Desenvolvimento de Software</div>
+                    <div class="tech-score" style="color: var(--accent-green);">66,1%</div>
+                </div>
+                <div class="tech-desc">
+                    <strong>🏆 Melhor disciplina técnica!</strong> Evolução incrível: era a mais crítica no 1º Bimestre
+                    e agora é a nota mais alta do curso.
+                </div>
+
+                <!-- Accordion CSS-Only -->
+                <div class="accordion-item">
+                    <input type="checkbox" id="toggle-proc" class="accordion-toggle">
+                    <label for="toggle-proc" class="accordion-header">
+                        <span>Ver detalhes e pontos de atenção</span>
+                        <div class="switch-visual"></div>
+                    </label>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>Ponto Forte:</strong> SDLC (Ciclo de Vida do Software) com 71,4% de acertos.
+                            </li>
+                            <li><strong>Atenção:</strong> Manifesto Ágil (60,7%). Uma dinâmica prática sobre os 4
+                                valores ágeis pode ajudar a fixar o conteúdo.</li>
+                            <li><strong>Destaque:</strong> 12 alunos alcançaram 100% de acertos nesta disciplina!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lógica -->
+            <div class="tech-card logic">
+                <div class="tech-header">
+                    <div class="tech-title">Lógica e Linguagem de Programação</div>
+                    <div class="tech-score" style="color: var(--accent-blue);">61,9%</div>
+                </div>
+                <div class="tech-desc">
+                    <strong>🚀 A que mais evoluiu!</strong> A base de programação está solidificada. Os alunos dominaram
+                    a estrutura de funções e reutilização de código.
+                </div>
+
+                <div class="accordion-item">
+                    <input type="checkbox" id="toggle-logic" class="accordion-toggle">
+                    <label for="toggle-logic" class="accordion-header">
+                        <span>Ver detalhes e pontos de atenção</span>
+                        <div class="switch-visual"></div>
+                    </label>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>Ponto Forte:</strong> Funções e reutilização de código com 82,1% de acertos.
+                            </li>
+                            <li><strong>Atenção:</strong> Docstring (documentação de código) teve apenas 32,1%. É uma
+                                habilidade profissional crucial que precisamos reforçar.</li>
+                            <li><strong>Destaque:</strong> 7 alunos gabaritaram esta disciplina!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Redes -->
+            <div class="tech-card net">
+                <div class="tech-header">
+                    <div class="tech-title">Redes de Computadores e Segurança</div>
+                    <div class="tech-score" style="color: var(--accent-amber);">52,4%</div>
+                </div>
+                <div class="tech-desc">
+                    <strong>🛠️ Em desenvolvimento.</strong> A parte de infraestrutura (IPv4) está ok, mas o conceito de
+                    segurança da informação precisa de reforço.
+                </div>
+
+                <div class="accordion-item">
+                    <input type="checkbox" id="toggle-net" class="accordion-toggle">
+                    <label for="toggle-net" class="accordion-header">
+                        <span>Ver detalhes e pontos de atenção</span>
+                        <div class="switch-visual"></div>
+                    </label>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>Ponto Forte:</strong> Máscara de sub-rede IPv4 com 64,3% de acertos.</li>
+                            <li><strong>Atenção:</strong> Diferenciar ameaça e vulnerabilidade teve apenas 25%.
+                                Sugerimos uma aula de reforço sobre "Ameaças x Vulnerabilidades" e segurança na nuvem.
+                            </li>
+                            <li><strong>Destaque:</strong> 4 alunos alcançaram 100% mesmo com o tema sendo desafiador.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!--Carreira-->
+            <div class="tech-card ccmt">
+                <div class="tech-header">
+                    <div class="tech-title">Carreira e Competências para o Mercado de Trabalho</div>
+                    <div class="tech-score" style="color: var(--accent-purple);">??,?%</div>
+                </div>
+                <div class="tech-desc">
+                    <strong>⚙️ Com erro:</strong> As notas e desempenho não foram divulgadas ainda.
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <h2 class="section-title"><span>📊</span> Visão Geral das Notas</h2>
+        <div class="chart-container">
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <!-- Top 5 Students -->
+        <h2 class="section-title"><span>🏆</span> Top 5 Alunos do Bimestre</h2>
+        <div class="top-students-grid">
+            <div class="student-card">
+                <div class="rank-badge">1º Lugar</div>
+                <h4>LUCA CORRÊA DE SOUZA</h4>
+                <div class="avg">9,57</div>
+                <div class="tech-highlights">100% Processos<br>100% Redes</div>
+            </div>
+            <div class="student-card">
+                <div class="rank-badge" style="background: linear-gradient(135deg, #94a3b8, #64748b); color: white;">2º
+                    Lugar</div>
+                <h4>VITOR DELA ROSA</h4>
+                <div class="avg">9,57</div>
+                <div class="tech-highlights">100% Lógica<br>100% Processos</div>
+            </div>
+            <div class="student-card">
+                <div class="rank-badge" style="background: linear-gradient(135deg, #b45309, #78350f); color: white;">3º
+                    Lugar</div>
+                <h4>ANA JULIA DE ALMEIDA SOUZA</h4>
+                <div class="avg">9,28</div>
+                <div class="tech-highlights">100% Lógica<br>100% Processos</div>
+            </div>
+            <div class="student-card">
+                <div class="rank-badge" style="background: linear-gradient(135deg, #b45309, #78350f); color: white;">4º
+                    Lugar</div>
+                <h4>ESTHER BISPO BRITO DOS ANJOS</h4>
+                <div class="avg">9,28</div>
+                <div class="tech-highlights">100% Processos<br>100% Redes</div>
+            </div>
+            <div class="student-card">
+                <div class="rank-badge" style="background: linear-gradient(135deg, #b45309, #78350f); color: white;">5º
+                    Lugar</div>
+                <h4>MYKAEL LEANDRO DUARTE</h4>
+                <div class="avg">9,00</div>
+                <div class="tech-highlights">100% Processos<br>100% Redes</div>
+            </div>
+        </div>
+
+        <!-- Support Section (Hidden by default) -->
+        <h2 class="section-title"><span>🤝</span> Acompanhamento Pedagógico</h2>
+        <div class="tech-card" style="border-color: rgba(239, 68, 68, 0.2);">
+            <div class="tech-desc" style="margin-bottom: 15px;">
+                Para manter um ambiente acolhedor, os dados individuais de alunos que precisam de suporte não são
+                exibidos publicamente. Professores e coordenação podem acessar os detalhes abaixo.
+            </div>
+
+            <div class="accordion-item">
+                <input type="checkbox" id="toggle-support" class="accordion-toggle">
+                <label for="toggle-support" class="accordion-header">
+                    <span>🔒 Ver alunos que precisam de atenção</span>
+                    <div class="switch-visual"></div>
+                </label>
+                <div class="accordion-content">
+                    <ul>
+                        <li><strong>📉 Queda de Rendimento Geral:</strong> Julia Barros (caiu de ~9,0 para 6,0), Enzo
+                            Gabriel (caiu de ~7,5 para 5,1), Wellington Cordeiro (média 4,1) e Eduardo Gabriel (média
+                            3,8).</li>
+                        <li><strong>⚠️ Média Geral Crítica:</strong> Enzo Cabral (2,5), Júlio César (2,0) e Richard
+                            Johann (2,7). Necessitam de acompanhamento psicopedagógico e plano de recuperação.</li>
+                        <li><strong>🚨 Alerta Técnico (Notas 0% ou muito baixas):</strong> Mykael Leandro (0% em Lógica
+                            e Processos), Jeniffer Nayara (0% em todas as técnicas) e Victor Cordeiro (0% em todas as
+                            técnicas). Ação sugerida: Verificar a frequência individual nessas aulas específicas e
+                            oferecer auxilio durante o desenvolvimento das.</li>
+                        <li><strong>📚 Reforço na Base Comum:</strong> Gabriel Ferreira (Excelente no técnico, mas média
+                            geral 4,1 puxada por Matemática e Física). Sugere-se reforço em exatas.</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- ==========================================
+     SEÇÃO DA TABELA DE DESEMPENHO TÉCNICO
+     ========================================== -->
+            <section class="table-section">
+                <h2 class="section-title"><span>📋</span> Desempenho Técnico Individual</h2>
+
+                <div class="table-controls">
+                    <input type="text" id="searchInput" placeholder="🔍 Buscar aluno pelo nome...">
+                    <select id="subjectFilter">
+                        <option value="all">Ordenar por: Nome</option>
+                        <option value="logica">Maior nota: Lógica</option>
+                        <option value="processos">Maior nota: Processos</option>
+                        <option value="redes">Maior nota: Redes</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="techTable">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Lógica</th>
+                                <th>Processos</th>
+                                <th>Redes</th>
+                                <th>Média Téc.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Linhas geradas via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==========================================
+     BOTÃO DE CHAMADA PARA VISITAS TÉCNICAS
+     ========================================== -->
+        <div class="cta-container">
+
+            <p class="cta-subtitle">📸 Ficou curioso para saber onde vamos?</p>
+            <a href="https://thiagogarcia01.github.io/visita-tecnica/" target="_blank" rel="noopener noreferrer"
+                class="cta-button">
+                <span class="cta-icon">🚌</span>
+                <span class="cta-text">Explorar Visitas Técnicas</span>
+                <span class="cta-icon">🗺️</span>
+            </a>
+        </div>
+
+        <footer>
+            Dados extraídos do sistema acadêmico em 07/05/2026 · Prova Paulista 3º Bimestre<br>
+            Desenvolvido por PAEET THIAGO TELES para fins pedagógicos e acompanhamento da turma.
+        </footer>
+    </div>
+
+    <script>
+        // Configuração do Gráfico (Chart.js) - Ajustado para Mobile
+        const ctx = document.getElementById('barChart').getContext('2d');
+
+        // Gradientes para as barras
+        const gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.9)');
+        gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+
+        const gradientGreen = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientGreen.addColorStop(0, 'rgba(16, 185, 129, 0.9)');
+        gradientGreen.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
+
+        const gradientAmber = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientAmber.addColorStop(0, 'rgba(245, 158, 11, 0.9)');
+        gradientAmber.addColorStop(1, 'rgba(245, 158, 11, 0.1)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['MATEMÁTICA', 'FÍSICA', 'HISTÓRIA', 'PORTUGUÊS', 'PROCESSOS', 'LÓGICA', 'REDES'],
+                datasets: [{
+                    label: '% de Acertos',
+                    data: [70.9, 67.3, 64.7, 61.8, 66.1, 61.9, 52.4],
+                    backgroundColor: [
+                        gradientGreen, // MAT
+                        gradientBlue,  // FIS
+                        gradientGreen,  // HIS
+                        gradientBlue,  // PORT
+                        gradientGreen, // PROC
+                        gradientBlue,  // LOG
+                        gradientGreen   // RED
+                    ],
+                    borderColor: [
+                        '#10b981', '#3b82f6', '#10b981', '#3b82f6', '#10b981', '#3b82f6', '#10b981'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Importante para mobile-first
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#94a3b8',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function (context) {
+                                return context.parsed.y + '% de acertos';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: { size: 10 },
+                            callback: function (value) { return value + '%'; }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#f8fafc',
+                            font: { family: 'Inter', size: 10, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+
+        /* =========================================
+   LÓGICA DA TABELA DE DESEMPENHO TÉCNICO
+   ========================================= */
+        (function () {
+            // Dados extraídos da planilha (Notas em %)
+            const techData = [
+                { nome: "ANA JULIA DE ALMEIDA SOUZA", logica: 100, processos: 100, redes: 66 },
+                { nome: "EDUARDO GABRIEL MACHADO", logica: 66, processos: 100, redes: 66 },
+                { nome: "ENZO CABRAL DA SILVA", logica: 100, processos: 100, redes: 66 },
+                { nome: "ENZO GABRIEL MORAES PEREIRA", logica: 33, processos: 50, redes: 66 },
+                { nome: "ESTHER BISPO BRITO DOS ANJOS", logica: 66, processos: 100, redes: 100 },
+                { nome: "FELIPE CARVALHO DOS SANTOS", logica: 66, processos: 100, redes: 66 },
+                { nome: "GABRIEL FERREIRA DA SILVA", logica: 100, processos: 100, redes: 66 },
+                { nome: "GUSTAVO LOPES DE SOUSA", logica: 100, processos: 100, redes: 66 },
+                { nome: "JENIFFER NAYARA DA SILVA BARBOSA", logica: 0, processos: 0, redes: 0 },
+                { nome: "JULIA BARROS FERREIRA DA SILVA", logica: 100, processos: 50, redes: 100 },
+                { nome: "JÚLIA VITÓRIA RIBEIRO COLADO", logica: 66, processos: 100, redes: 100 },
+                { nome: "JÚLIO CÉSAR BATISTA DE LIMA", logica: 33, processos: 50, redes: 0 },
+                { nome: "JULIO PIETRO DO NASCIMENTO GONCALVES", logica: 66, processos: 100, redes: 66 },
+                { nome: "KAUAN DINIZ DA SILVA", logica: 66, processos: 100, redes: 33 },
+                { nome: "KAYKY TECEDOR ALTMANN", logica: 100, processos: 50, redes: 66 },
+                { nome: "KESLLEY GABRIEL DA SILVA GOMES", logica: 100, processos: 50, redes: 66 },
+                { nome: "LUCA CORRÊA DE SOUZA", logica: 66, processos: 50, redes: 100 },
+                { nome: "MARIANE ELOISE FERREIRA NUNES", logica: 0, processos: 50, redes: 0 },
+                { nome: "MATHEUS GABRIEL SANTOS PEREIRA", logica: 66, processos: 100, redes: 100 },
+                { nome: "MATHEUS OLIVEIRA MENEZES", logica: 66, processos: 50, redes: 33 },
+                { nome: "MYKAEL LEANDRO DUARTE ELIAS FERREIRA", logica: 0, processos: 0, redes: 0 },
+                { nome: "NICCOLAS DAVI OLIVEIRA DE MORAIS", logica: 66, processos: 50, redes: 0 },
+                { nome: "NICOLAS ANTHONY DE OLIVEIRA NASCIMENTO", logica: 33, processos: 50, redes: 33 },
+                { nome: "RICHARD JOHANN FONSECA GOMES", logica: 66, processos: 50, redes: 66 },
+                { nome: "VERONICA BEATRIZ APARECIDA GRACIANO DIAS", logica: 66, processos: 100, redes: 66 },
+                { nome: "VICTOR CORDEIRO MOREIRA", logica: 0, processos: 0, redes: 0 },
+                { nome: "VITOR DELA ROSA", logica: 100, processos: 100, redes: 66 },
+                { nome: "WELLINGTON CORDEIRO FERNANDES", logica: 33, processos: 0, redes: 0 }
+            ];
+
+            const tableBody = document.getElementById('tableBody');
+            const searchInput = document.getElementById('searchInput');
+            const subjectFilter = document.getElementById('subjectFilter');
+
+            // Função para definir a cor da nota
+            function getGradeClass(grade) {
+                if (grade >= 80) return 'grade-high';
+                if (grade >= 50) return 'grade-mid';
+                return 'grade-low';
+            }
+
+            // Função para renderizar a tabela
+            function renderTable(data) {
+                tableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 20px;">Nenhum aluno encontrado.</td></tr>';
+                    return;
+                }
+
+                data.forEach(aluno => {
+                    // Calcula a média técnica
+                    const media = ((aluno.logica + aluno.processos + aluno.redes) / 3).toFixed(1);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${aluno.nome}</td>
+                <td class="${getGradeClass(aluno.logica)}">${aluno.logica}%</td>
+                <td class="${getGradeClass(aluno.processos)}">${aluno.processos}%</td>
+                <td class="${getGradeClass(aluno.redes)}">${aluno.redes}%</td>
+                <td class="${getGradeClass(parseFloat(media))}">${media}%</td>
+            `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Função para aplicar busca e filtros
+            function applyFilters() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const subject = subjectFilter.value;
+
+                // 1. Filtra pelo nome
+                let filteredData = techData.filter(aluno =>
+                    aluno.nome.toLowerCase().includes(searchTerm)
+                );
+
+                // 2. Ordena com base no filtro selecionado
+                if (subject === 'all') {
+                    filteredData.sort((a, b) => a.nome.localeCompare(b.nome)); // Ordem alfabética
+                } else {
+                    // Ordena da maior nota para a menor na matéria escolhida
+                    filteredData.sort((a, b) => b[subject] - a[subject]);
+                }
+
+                // 3. Renderiza
+                renderTable(filteredData);
+            }
+
+            // Event Listeners
+            searchInput.addEventListener('input', applyFilters);
+            subjectFilter.addEventListener('change', applyFilters);
+
+            // Renderização inicial (ordem alfabética)
+            applyFilters();
+
+        })();
+        /* =========================================
+           RENDERIZAÇÃO DINÂMICA DOS CARDS DE FGB
+           ========================================= */
+        (function renderFGB() {
+            // 1. Dados extraídos da planilha (Linha "Total") - CORRIGIDOS
+            const fgbData = [
+                { materia: "Matemática", nota: 70.9 },
+                { materia: "Química", nota: 67.3 }, // Corrigido
+                { materia: "Ed. Financeira", nota: 65.3 }, // Corrigido
+                { materia: "História", nota: 64.7 },
+                { materia: "Física", nota: 62.0 }, // Corrigido
+                { materia: "Língua Portuguesa", nota: 61.8 },
+                { materia: "Geografia", nota: 58.7 },
+                { materia: "Sociologia", nota: 57.3 }, // Corrigido
+                { materia: "Biologia", nota: 56.0 }, // Corrigido
+                { materia: "Língua Inglesa", nota: 53.3 }
+            ];
+
+            // 2. Função auxiliar para definir a cor com base na nota
+            function getCorNota(nota) {
+                if (nota >= 65) return "var(--accent-green)"; // Destaque alto
+                if (nota >= 55) return "var(--accent-blue)";  // Médio
+                return "var(--accent-purple)";                // Atenção
+            }
+
+            // 3. Ordenar da maior nota para a menor
+            fgbData.sort((a, b) => b.nota - a.nota);
+
+            // 4. Selecionar o container
+            const container = document.getElementById('fgb-grid');
+
+            if (!container) return;
+
+            // 5. Gerar o HTML de cada card
+            container.innerHTML = fgbData.map(item => `
+        <div class="tech-card" style="padding: 15px; text-align: center;">
+            <div class="tech-score" style="color: ${getCorNota(item.nota)}; font-size: 1.4rem;">
+                ${item.nota.toFixed(1).replace('.', ',')}%
+            </div>
+            <div class="tech-title" style="font-size: 0.8rem; margin-top: 5px; max-width: 100%;">
+                ${item.materia}
+            </div>
+            <div class="tech-desc" style="font-size: 0.7rem; margin-top: 5px; margin-bottom: 0; color: var(--text-muted);">
+                ${item.nota >= 60 ? 'Acima da média' : 'Em desenvolvimento'}
+            </div>
+        </div>
+    `).join('');
+        })();
+
+    </script>
+
+</body>
+
+</html>
